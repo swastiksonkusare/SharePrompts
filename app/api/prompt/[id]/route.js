@@ -17,11 +17,14 @@ export const GET = async (req, { params }) => {
   }
 };
 
-export const PATCH = async (req, params) => {
+export const PATCH = async (req, { params }) => {
   const { prompt, tag } = await req.json();
 
   try {
-    const existingPrompt = await existingPrompt.findById(params.id);
+    await connectToDB();
+
+    const existingPrompt = await Prompt.findById(params.id);
+    console.log(existingPrompt);
 
     if (!existingPrompt) {
       return new Response("Prompt not found", { status: 404 });
@@ -32,7 +35,7 @@ export const PATCH = async (req, params) => {
 
     await existingPrompt.save();
 
-    return new Response(JSON.stringify(existingPrompt), { status: 200 });
+    return new Response("Successfully Updated", { status: 200 });
   } catch (error) {
     return new Response("Failed to update the prompt", { status: 500 });
   }
