@@ -36,8 +36,6 @@ const UpdatePrompt = () => {
     e.preventDefault();
     setSubmitting(true);
 
-    console.log(promptId);
-
     if (!promptId) return alert("Prompt ID not found");
 
     try {

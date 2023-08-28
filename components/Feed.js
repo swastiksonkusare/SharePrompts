@@ -20,18 +20,54 @@ const PromptCardList = ({ data, handleTagClick }) => {
 
 const Feed = () => {
   const [searchText, setSearchText] = useState("");
-
   const [posts, setPosts] = useState([]);
+  const [timer, setTimer] = useState(null);
 
-  const handleSearchChange = (e) => {};
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value);
+  };
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await fetch("/api/prompt");
-      const data = await response.json();
-      setPosts(data);
-    };
+    if (timer) {
+      clearTimeout(timer);
+    }
 
+    if (searchText.trim() === "") {
+      fetchPosts();
+      return;
+    }
+
+    const newTimer = setTimeout(() => {
+      const regex = new RegExp(searchText, "i");
+
+      const filteredPosts = posts.filter(
+        (p) =>
+          regex.test(p.creator.username) ||
+          regex.test(p.tag) ||
+          regex.test(p.prompt)
+      );
+
+      setPosts(filteredPosts);
+    }, 3000);
+
+    setTimer(newTimer);
+
+    // Cleanup the timer when the component unmounts
+    return () => {
+      clearTimeout(newTimer);
+    };
+  }, [searchText]);
+
+  const handleTagClick = (query) => {
+    setSearchText(query);
+  };
+
+  const fetchPosts = async () => {
+    const response = await fetch("/api/prompt");
+    const data = await response.json();
+    setPosts(data);
+  };
+  useEffect(() => {
     fetchPosts();
   }, []);
 
@@ -48,7 +84,7 @@ const Feed = () => {
         />
       </form>
 
-      <PromptCardList data={posts} handleTagClick={() => {}} />
+      <PromptCardList data={posts} handleTagClick={handleTagClick} />
     </section>
   );
 };
