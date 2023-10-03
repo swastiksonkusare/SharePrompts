@@ -9,7 +9,7 @@ const handler = NextAuth({
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
   callbacks: {
@@ -23,7 +23,6 @@ const handler = NextAuth({
     },
 
     async signIn({ profile }) {
-      console.log(profile);
       try {
         await connectToDB();
 
